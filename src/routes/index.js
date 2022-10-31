@@ -65,9 +65,13 @@ export default function Router() {
             path: '/',
             children: [
                 { element: <AuthGuard><Navigate to={'/application/pages'} replace /></AuthGuard>, index: true },
-
+                {element:<Page404 />, path:'*'}
             ],
         },
+        {
+            path:'*',
+            element:<Page404 />
+        }
     ])
 }
 const Loadable = (Component) => (props) => {
@@ -101,3 +105,6 @@ const PurchaseInvoices = Loadable(lazy(() => import('../pages/purchase/PurchaseI
 
 // invoice routes
 const PlantInvoiceList = Loadable(lazy(() => import('../pages/invoice/InvoiceList')));
+
+// page
+const Page404 = Loadable(lazy(() => import('../pages/Page404')));
