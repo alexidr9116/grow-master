@@ -1,90 +1,113 @@
-import { createContext, useEffect, useReducer } from 'react';
+import { createContext, useEffect, useReducer } from "react";
 import PropTypes from 'prop-types';
+import { isValidToken, setSession } from "../utils/jwt";
+import { API_AUTH, SEND_GET_REQUEST, SEND_POST_REQUEST } from "../utils/API";
 
-// utils
-import axios from '../utils/axios';
-import { isValidToken, setSession } from '../utils/jwt';
-
-
-// const firebaseApp = initializeApp(FIREBASE_API);
-
-// const AUTH = getAuth(firebaseApp);
-
-// AUTH.settings.appVerificationDisabledForTesting  = true; 
-// ----------------------------------------------------------------------
+// -----------------------------------------
 
 const initialState = {
-    isAuthenticated: false,
-    isInitialized: false,
-    user: null,
-};
-
+    isAuthenticated:false,
+    isInitialized:false,
+    user:null,
+}
 const handlers = {
-    INITIALIZE: (state, action) => {
-        const { isAuthenticated, user } = action.payload;
+    INITIALIZE:(state,action)=>{
+        
+        const {isAuthenticated,user} = action.payload;
         return {
             ...state,
             isAuthenticated,
-            isInitialized: true,
+            isInitialized:true,
             user,
-        };
-    },
-
-    OTPFINAL: (state, action) => {
-        const { final } = action.payload;
-        return {
-            ...state,
-            isAuthenticated: false,
-            isInitialized: true,
-            final,
-            user: null,
         }
     },
-    LOGINED: (state, action) => {
-        const { user } = action.payload;
-
+    LOGIN:(state,action)=>{
+        const {user} = action.payload;
         return {
             ...state,
-            isAuthenticated: true,
-            user,
-        };
+            isAuthenticated:true,
+            user
+        }
     },
-    LOGOUT: (state) => ({
-        ...state,
-        isAuthenticated: false,
-        final: null,
+    LOGOUT:(state)=>{
+        return{
+            ...state,
+            isAuthenticated:false,
+            user:null,
+        }
+    }
+}
 
-        user: null,
-    }),
-
-
-};
-
-const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
+const reducer = (state,action)=>(handlers[action.type]?handlers[action.type](state,action):state);
 
 const AuthContext = createContext({
     ...initialState,
-    method: 'jwt',
-    login: () => Promise.resolve(),
-    logout: () => Promise.resolve(),
-    initialize: () => Promise.resolve(),
 });
 
-// ----------------------------------------------------------------------
+// -----------------------------------------
 
 AuthProvider.propTypes = {
-    children: PropTypes.node,
-};
-
-function AuthProvider({ children }) {
-    const [state, dispatch] = useReducer(reducer, initialState);
-    const initialize = async () => {
+    children:PropTypes.node,
+}
+function AuthProvider({children}){
+    const [state,dispatch] = useReducer(reducer,initialState);
+    const login = async(email,password)=>{
+        try{
+            const response = await SEND_POST_REQUEST(API_AUTH.login,{email,password});
+            if(response.status === 200){
+                const {token,user} = response.data;
+                setSession(token);
+                dispatch({
+                    type:'LOGIN',
+                    payload:{user,}
+                });
+            }
+            return response;
+        }
+        catch(err){
+            console.log(err);
+            return {status:500, message:'Context Error', data:err};
+        }
+    }
+    const logout = async()=>{
+        try{
+            setSession(null);
+            dispatch({type:'LOGOUT'});
+            console.log("logout")
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+    const signup = async(data)=>{
+        try{
+            const response = await SEND_POST_REQUEST(API_AUTH.register,data);
+            if(response.status === 200){
+                const {token,user} = response.data;
+                setSession(token);
+                dispatch({
+                    type:'LOGIN',
+                    payload:{user,}
+                });
+            }
+            return response;
+            
+        }
+        catch(err){
+            console.log(err);
+            return {status:500, message:'Context Error', data:err};
+        }
+    }
+    const initialize = async()=>{
         try {
             const accessToken = window.localStorage.getItem('accessToken');
+            
             if (accessToken && isValidToken(accessToken)) {
                 setSession(accessToken);
-                const response = await axios.get('/api/auth/my-account');
+                
+                const response = await SEND_GET_REQUEST(API_AUTH.account);
                 const { user } = response.data;
+                
                 dispatch({
                     type: 'INITIALIZE',
                     payload: {
@@ -111,140 +134,26 @@ function AuthProvider({ children }) {
                 },
             });
         }
-    };
+    }
 
-    useEffect(() => {
-        console.log("--------------iniitalize passport-------------------");
+    useEffect(()=>{
+        console.log("----------initialize auth context---------");
         initialize();
-    }, []);
+    },[]);
 
-    const otpVerify = async (otp, callback) => {
-        try {
-            const phoneNumber = window.phoneNumber;
-            const otpResult = await axios.post('/api/auth/verifyOtp', {
-                phoneNumber,
-                otp
-            });
-            const { success } = otpResult.data;
-            if (success) {
-                // register or update mongodb
-                const response = await axios.post('/api/auth/register', {
-                    phoneNumber,
-                });
-                if (response.status === 200) {
-                    const { token, user } = response.data;
-                    setSession(token);
-                    dispatch({
-                        type: 'LOGINED',
-                        payload: {
-                            user,
-                        },
-                    });
-                    callback({ success: true });
-                }
-            } else {
-                callback({ success: false, err: 'unmathed otpcode' });
+    return(
+        <AuthContext.Provider value = {
+            {
+                ...state,
+                method:'jwt',
+                login,
+                logout,
+                signup,
+                initialize,
             }
-
-        } catch (err) {
-            callback({ success: false, err: 'otp response err' });
-        }
-    }
-
-    const codeVerify = async (phoneNumber, pinCode) => {
-        const response = await axios.post('/api/auth/pincode', { phoneNumber, pinCode });
-
-        const { token, user } = response.data;
-
-        // verify phoneNumber via firebase
-        if (!token) {
-            try {
-                window.phoneNumber = phoneNumber;
-                return { success: false, message: 'pin code verification error' };
-            } catch (err) {
-                return { success: false, message: 'pin code verification error' };
-            }
-        }
-        if (user.status === "inactive") {
-            return { success: false, message: 'Your account is inactive. Please contact with administrator' };
-        }
-        setSession(token);
-        dispatch({
-            type: 'LOGINED',
-            payload: {
-                user,
-            },
-        });
-        return { success: true, message: 'verification successfully' };
-
-    }
-
-    const login = async (phoneNumber) => {
-
-        const response = await axios.post('/api/auth/login', {
-            phoneNumber
-        });
-
-        const isPinCode = response.data.pinVerify
-
-        if (isPinCode) {
-            return 'pincode'
-        }
-        const { token, user } = response.data;
-
-        // verify phoneNumber via sms
-        if (!token) {
-            try {
-                window.phoneNumber = phoneNumber;
-                return 'otp';
-            } catch (err) {
-                console.log(err);
-                return 'otp';
-            }
-
-        } else {
-
-            if (user.status === "inactive") {
-                return "inactive";
-            }
-            setSession(token);
-            dispatch({
-                type: 'LOGINED',
-                payload: {
-                    user,
-                },
-            });
-            return 'navigate';
-
-        }
-
-    };
-
-
-    const logout = async () => {
-        try {
-            setSession(null);
-
-            dispatch({ type: 'LOGOUT' });
-            // signOut(AUTH);
-        } catch (err) {
-
-            console.log(err);
-        }
-
-    };
-
-    return (<AuthContext.Provider value={
-        {
-            ...state,
-            method: 'jwt',
-            login,
-            logout,
-            otpVerify,
-            codeVerify,
-            initialize,
-        }
-    } > {children} </AuthContext.Provider>);
+        }>
+            {children}
+        </AuthContext.Provider>    
+    )
 }
-
-export { AuthContext, AuthProvider };
+export {AuthContext,AuthProvider}

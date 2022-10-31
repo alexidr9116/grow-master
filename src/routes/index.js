@@ -1,20 +1,29 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 import LoadingScreen from '../components/LoadingScreen';
+import AuthGuard from '../guards/AuthGuard';
+import GuestGuard from '../guards/GuestGuard';
 import { ApplicationLayout } from '../layout';
 
 export default function Router() {
     return useRoutes([
-        // {
-        //     path:'auth',
-        //     children:[
 
-        //     ]
-        // },
+        {
+            path:'auth',
+            children: [
+                { element: <GuestGuard><Login /></GuestGuard>, index: true },
+                { element: <GuestGuard><Login /></GuestGuard>, path: 'login' },
+                { element: <AuthGuard><Logout /></AuthGuard>, path: 'logout' },
+            ],
+        },
         {
             path: 'application',
-            element: (<ApplicationLayout />),
+            element: (<AuthGuard><ApplicationLayout /></AuthGuard>),
             children: [
+                {
+                    path:'pages',
+                    element:<PageIndex />
+                },
                 {
                     path: 'stock',
                     children: [
@@ -48,9 +57,17 @@ export default function Router() {
                         { path: 'order-list', element: <PurchaseOrders /> },
                         { path: 'invoice-list', element: <PurchaseInvoices /> }
                     ]
-                }
+                },
+
             ]
-        }
+        },
+        {
+            path: '/',
+            children: [
+                { element: <AuthGuard><Navigate to={'/application/pages'} replace /></AuthGuard>, index: true },
+
+            ],
+        },
     ])
 }
 const Loadable = (Component) => (props) => {
@@ -60,6 +77,11 @@ const Loadable = (Component) => (props) => {
         </Suspense>
     )
 }
+const PageIndex = Loadable(lazy(() => import('../pages/Index')));
+
+// auth routes
+const Login = Loadable(lazy(() => import('../pages/auth/Login')));
+const Logout = Loadable(lazy(() => import('../pages/auth/Logout')));
 
 // stock routes
 const StockNameList = Loadable(lazy(() => import('../pages/stock/name/NameList')));

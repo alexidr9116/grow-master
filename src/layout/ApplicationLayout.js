@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet,Link } from "react-router-dom"
 import { useNavigate } from 'react-router-dom';
 import MainMenu from "./provider/MainMenu";
 import MainToolbar from "./provider/MainToolbar";
@@ -13,11 +13,12 @@ export default function ApplicationLayout() {
                 <label>
 
                 </label>
-                <div className="flex justify-center h-20 ">
-                    <img src='/assets/grow-master-logo.png' alt=''></img>
-                </div>
-                <label>
+                <Link className="flex justify-center h-20 " to = "/application/pages">
                     
+                    <img src='/assets/grow-master-logo.png' alt=''></img>
+                </Link>
+                <label>
+
                 </label>
             </div>
 

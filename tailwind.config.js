@@ -1,9 +1,18 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./src/**/*.{js,jsx,tx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Inter', ...defaultTheme.fontFamily.sans],
+      },
+    },
+    container:{
+      center:true,
+    }
   },
-  plugins: [],
+  plugins: [require("daisyui")],
+
 }
