@@ -4,6 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider as ReduxProvider } from 'react-redux';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import reportWebVitals from './reportWebVitals';
+import { Toaster } from 'react-hot-toast';
+
 import './index.css';
 
 import 'jqwidgets-scripts/jqwidgets/styles/jqx.base.css';
@@ -24,6 +26,8 @@ root.render(
       {/* <PersistGate loading={null} persistor={persistor}> */}
 
       <BrowserRouter>
+        <Toaster position="top-right" />
+
         <App />
       </BrowserRouter>
 

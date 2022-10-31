@@ -33,6 +33,7 @@ export default function Login() {
 
         }).catch(err => {
             setLoading(false)
+            toast.error('Network error, please check your connection');
             console.log(err);
         })
     }

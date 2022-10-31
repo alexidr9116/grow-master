@@ -28,7 +28,7 @@ export default function ApplicationIndex() {
                         <IconLink link="/application/stock/stock-updates" icon="grommet-icons:document-update" label="Updates" />
                         <IconLink link="/application/stock/name-list" icon="wpf:name" label="Name & Inv" />
                         <IconLink link="/application/stock/inventory-list" icon="fluent-mdl2:document-set" label="Inv & Loc" />
-                        <IconLink link="application/stock/stock-updates" icon="fluent-mdl2:checkbox-composite" label="Inv Composite" />
+                        <IconLink link="/application/stock/stock-updates" icon="fluent-mdl2:checkbox-composite" label="Inv Composite" />
 
                     </div>
                 </div>
