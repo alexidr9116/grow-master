@@ -33,7 +33,7 @@ export default function StockUpdateList() {
                     </JqxSplitter>
                 </div>
 
-                <div className="flex gap-2 p-2 justify-between">
+                <div className="flex gap-2 p-2 justify-between flex-wrap">
                     <label>Find Sys.Batch:</label>
                     <JqxInput width={'250'} placeHolder={'Search Key'} className={'flex-1'} />
                     <JqxButton className={'flex-1'}>Update</JqxButton>

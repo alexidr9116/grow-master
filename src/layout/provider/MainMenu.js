@@ -35,6 +35,27 @@ export default function MainMenu() {
 
                     </ul>
                 </li>
+                <li>
+                    <Link to={'/application/sales'}>Invoices</Link>
+                    <ul style={{ width: '250px' }}>
+                        <li><Link to={'/application/invoice/plant-list'}>Plant Invoice</Link></li>
+                        <li><Link to={'/application/invoice/plant-list'}>Text Invoice</Link></li>
+                        <li type='separator' />
+                         
+
+                    </ul>
+                </li>
+                <li>
+                    <Link to={'/application/sales'}>Purchase</Link>
+                    <ul style={{ width: '250px' }}>
+                        <li><Link to={'/application/purchase/order-list'}>Orders</Link></li>
+                        <li type='separator' />
+                        <li><Link to={'/application/purchase/goods-received-notes'}>Goods Received Notes</Link></li>
+                        <li type='separator' />
+                        <li><Link to={'/application/purchase/invoice-list'}>Purchase Invoices</Link></li>
+
+                    </ul>
+                </li>
             </ul>
         </JqxMenu>
     )

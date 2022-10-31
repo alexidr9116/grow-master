@@ -27,7 +27,7 @@ export default function InventoryCollectionList() {
                         </JqxGrid>
                     </div> 
                 </JqxSplitter>
-                <div className="flex gap-2 p-2 justify-center">
+                <div className="flex gap-2 p-2 justify-between flex-wrap">
                     <label>Key:</label>
                     <JqxInput width={'250'} placeHolder={'Search Key'} />
                     <JqxButton className={'flex-1'}>New Invent</JqxButton>
