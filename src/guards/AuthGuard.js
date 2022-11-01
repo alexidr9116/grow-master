@@ -22,7 +22,7 @@ export default function AuthGuard({ children }) {
   const [requestedLocation, setRequestedLocation] = useState(null);
 
   if (!isInitialized) {
-    return <LoadingScreen nprogress={false}/>;
+    return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {
