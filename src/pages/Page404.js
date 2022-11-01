@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export default function Page404() {
 
     return (
-        <div className="container w-full flex justify-center items-center gap-8 flex-col h-screen max-w-4xl">
+        <div className="container w-full flex justify-center items-center gap-8 flex-col min-h-screen max-w-4xl">
             <Link to='/application/pages'>
                 <img src='/assets/grow-master-logo.png' alt="logo" />
             </Link>

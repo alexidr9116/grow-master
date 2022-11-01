@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, useRoutes, useLocation } from 'react-router-dom';
 import LoadingScreen from '../components/LoadingScreen';
+import NProgressBar from '../components/NProgressBar';
 import AuthGuard from '../guards/AuthGuard';
 import GuestGuard from '../guards/GuestGuard';
 import { ApplicationLayout } from '../layout';
@@ -74,9 +75,10 @@ export default function Router() {
         }
     ])
 }
+
 const Loadable = (Component) => (props) => {
     return (
-        <Suspense fallback={<LoadingScreen />}>
+        <Suspense fallback={<LoadingScreen  />}>
             <Component {...props} />
         </Suspense>
     )

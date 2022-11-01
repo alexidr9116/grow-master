@@ -2,3 +2,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#nprogress .bar{
+    top:0;
+    left:0;
+    height:4px;
+    width: 100%;
+    position: fixed;
+    z-index: 99999;
+    background-color: red;
+    box-shadow: '0 0 2px red'
+}
+#nprogress .peg{
+    right:0;
+    opacity: 1;
+    height:'100%';
+    width: 100;
+    display: block;
+    position: absolute;
+    transform: rotate(3deg) translate(0px -4px);
+    
+    box-shadow: '0 0 10px red 0 0 5px red'
+}

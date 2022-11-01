@@ -19,7 +19,7 @@ export default function GuestGuard({ children }) {
   }
 
   if (!isInitialized) {
-    return <LoadingScreen />;
+    return <LoadingScreen  nprogress={false} />;
   }
 
   return <>{children}</>;
